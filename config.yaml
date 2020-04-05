@@ -1,0 +1,8 @@
+---
+#Configuration file
+
+VM_2_address: 132.72.105.220
+A: 1234
+B: 10
+C: 2
+MY_FILE: out1.txt
