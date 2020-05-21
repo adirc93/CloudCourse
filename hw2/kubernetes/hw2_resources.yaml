@@ -1,0 +1,66 @@
+#This file describes K8S deployment, service and HorizontalPodAotuscalar
+#TODO - check the number of cores needed
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hw2
+spec:
+  selector:
+    matchLabels:
+      run: hw2
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: hw2
+    spec:
+      containers:
+      - name: hw2
+        image: reutdockerbgu/k8s:hw2_v1
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: 9m
+          requests:
+            cpu: 6m
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: hw2
+  labels:
+    run: hw2
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    nodePort: 30555
+  selector:
+    run: hw2
+
+---
+
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: hw2
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: hw2
+  minReplicas: 1
+  maxReplicas: 100
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50

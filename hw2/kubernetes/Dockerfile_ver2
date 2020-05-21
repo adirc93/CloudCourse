@@ -1,0 +1,4 @@
+FROM ariksa/custom-nginx
+EXPOSE 80
+RUN echo "Student IDs: 204484109_318199601" >> /usr/share/nginx/html/index.html
+RUN echo "Server version: version-2" >> /usr/share/nginx/html/index.html
