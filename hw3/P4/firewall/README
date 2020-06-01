@@ -1,0 +1,22 @@
+#question 10
+#   Run your code as shown above, for example run iperf flow between two hosts,
+#   between witch of the pair it works, witch are blocked? You can add more tests of you own
+
+#Answer:
+#   Works:
+#   iperf h1 h2
+#   iperf h1 h3
+#   iperf h1 h4
+#   iperf h2 h1
+#   iperf h2 h3
+#   iperf h2 h4
+
+#   Does not work:
+#   iperf h3 h1
+#   iperf h3 h2
+#   iperf h4 h1
+#   iperf h4 h2
+
+#Of course this is happens due to the firewall
+
+
