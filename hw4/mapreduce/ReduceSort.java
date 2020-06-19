@@ -18,21 +18,21 @@ public class ReduceSort extends Reducer<Text, Text, Text, Text> {
 
             if (eventsList.length > 3) {
                 for(int i = 0; i<eventsList.length-2; i++) {
-                    context.write(new Text("("+eventsList[i]+"),"+"("+eventsList[i+1]+"),"+"("+eventsList[i+2]+")"), key);
+                    context.write(new Text("("+eventsList[i]+");"+"("+eventsList[i+1]+");"+"("+eventsList[i+2]+")"), key);
                 }
             }
             else {
                 if (eventsList.length == 2) {
                     String[] eventSplit = eventsList[1].split(",");
                     eventSplit[1] = "0";
-                    context.write(new Text("("+eventsList[0]+"),"+"("+eventsList[1]+")"+"("+eventSplit[0]+","+eventSplit[1]+")"), key);
+                    context.write(new Text("("+eventsList[0]+");"+"("+eventsList[1]+")"+"("+eventSplit[0]+";"+eventSplit[1]+")"), key);
                 } else if (eventsList.length == 1) {
                     String[] eventSplit = eventsList[0].split(",");
                     eventSplit[1] = "0";
-                    context.write(new Text("("+eventsList[0]+"),"+"("+eventSplit[0]+","+eventSplit[1]+"),"+"("+eventSplit[0]+","+eventSplit[1]+")"), key);
+                    context.write(new Text("("+eventsList[0]+");"+"("+eventSplit[0]+";"+eventSplit[1]+"),"+"("+eventSplit[0]+","+eventSplit[1]+")"), key);
 
                 } else {
-                    context.write(new Text("("+eventsList[0]+"),"+"("+eventsList[1]+"),"+"("+eventsList[2]+")"), key);
+                    context.write(new Text("("+eventsList[0]+");"+"("+eventsList[1]+");"+"("+eventsList[2]+")"), key);
                 }
             }
         }
