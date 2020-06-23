@@ -14,7 +14,8 @@ public class map3 extends Mapper<LongWritable, Text, Text, IntWritable> {
     public void map(LongWritable key, Text value, Context context)
             throws IOException, InterruptedException {
         //example:
-        //(234,0);(6963,0);(5874,0)	24040
+        //(234,0);(6963,0);(5874,1)	24040 yehuda
+        //234.1 ; 6963,1 5774,1 shimon
         String line = value.toString();
         String[] words = line.split(" ");
         String[] events = words[0].split(";");
@@ -27,7 +28,7 @@ public class map3 extends Mapper<LongWritable, Text, Text, IntWritable> {
         if(events[2].charAt(len - 1) == '1') {
             int eCut1 = eventCut1[0].length()-1;
             int eCut2 = eventCut2[0].length()-1;
-            context.write(new Text(eventCut1[0].substring(1,eCut1)+ ";"+eventCut2[0].substring(1,eCut2)), new IntWritable(1));
+            context.write(new Text("(" + eventCut1[0].substring(1,eCut1)+ ","+eventCut2[0].substring(1,eCut2) + ")"), new IntWritable(1));
         }
     }
 }

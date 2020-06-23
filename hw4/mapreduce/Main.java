@@ -22,8 +22,9 @@ public class Main extends Configured implements Tool {
     public int run(String[] args) throws Exception {
         Path tempDir = new Path("data/temp-" + Integer.toString(new Random().nextInt(Integer.MAX_VALUE)));
         Path tempDir2 = new Path("data/temp2-" + Integer.toString(new Random().nextInt(Integer.MAX_VALUE)));
+        Path tempDir3 = new Path("data/temp3-" + Integer.toString(new Random().nextInt(Integer.MAX_VALUE)));
         Configuration conf = getConf();
-        FileSystem.get(conf).delete(new Path("data/output"), true);
+        //FileSystem.get(conf).delete(new Path(args[1]), true);
 
         try {
 // ----------- FIRST JOB -----------
@@ -39,7 +40,8 @@ public class Main extends Configured implements Tool {
             wordCountJob.setMapperClass(Map.class);
             wordCountJob.setReducerClass(Reduce.class);
 
-            Path inputFilePath = new Path("data/input/");
+            //Path inputFilePath = new Path("data/input/");
+            Path inputFilePath = new Path(args[0]);
             Path outputFilePath = tempDir;
 
             FileInputFormat.addInputPath(wordCountJob, inputFilePath);
@@ -51,12 +53,13 @@ public class Main extends Configured implements Tool {
 
 // ----------- SECOND JOB -----------
             System.out.println("-------SECOND JOB-------");
+            conf = new Configuration();
             Job filterJob = Job.getInstance(conf);
             filterJob.setJobName("Filter");
+            filterJob.setJarByClass(Main.class);
 
             FileInputFormat.setInputPaths(filterJob, tempDir);
-            FileOutputFormat.setOutputPath(filterJob,tempDir2);
-         //   FileOutputFormat.setOutputPath(filterJob, new Path("data/output"));
+            FileOutputFormat.setOutputPath(filterJob, tempDir2);
 
             filterJob.setMapOutputValueClass(Text.class);
             filterJob.setOutputKeyClass(Text.class);
@@ -65,35 +68,55 @@ public class Main extends Configured implements Tool {
             filterJob.setMapperClass(MapSort.class);
             filterJob.setReducerClass(ReduceSort.class);
 
-           // Path inputFilePath2 = new Path("data/input/");
-         //   Path outputFilePath2 = tempDir2;
-
-
             if (!filterJob.waitForCompletion(true)) {
                 return 1;
             }
 
-            // ----------- Third JOB -----------
-
-            System.out.println("-------Third JOB-------");
+// ----------- Third JOB -----------
+            System.out.println("-------THIRD JOB-------");
             conf = new Configuration();
             Job countJob = Job.getInstance(conf);
-            countJob.setJobName("count");
-
+            countJob.setJobName("Count");
             countJob.setJarByClass(Main.class);
-            FileInputFormat.setInputPaths(countJob, tempDir2);
-            FileOutputFormat.setOutputPath(countJob, new Path("data/output/"));
 
+            FileInputFormat.setInputPaths(countJob, tempDir2);
+            FileOutputFormat.setOutputPath(countJob, tempDir3);
+            
             countJob.setMapOutputValueClass(IntWritable.class);
             countJob.setOutputKeyClass(Text.class);
-            countJob.setOutputValueClass(Text.class);
+            countJob.setOutputValueClass(LongWritable.class);
 
             countJob.setMapperClass(map3.class);
             countJob.setReducerClass(reduce3.class);
 
-            return countJob.waitForCompletion(false) ? 0 : 1;
+            if (!countJob.waitForCompletion(true)) {
+                return 1;
+            }
+
+
+            // ----------- Forth JOB -----------
+            System.out.println("-------FORTH JOB-------");
+            conf = new Configuration();
+            Job sortJob = Job.getInstance(conf);
+            sortJob.setJobName("Sort");
+            sortJob.setJarByClass(Main.class);
+
+            FileInputFormat.setInputPaths(sortJob, tempDir3);
+            //FileOutputFormat.setOutputPath(sortJob, new Path("data/output"));
+            FileOutputFormat.setOutputPath(sortJob, new Path(args[1]));
+            
+            sortJob.setMapOutputValueClass(Text.class);
+            sortJob.setOutputKeyClass(Text.class);
+            sortJob.setOutputValueClass(LongWritable.class);
+
+            sortJob.setMapperClass(map4.class);
+            sortJob.setReducerClass(reduce4.class);
+
+            System.out.println("-------RUNNING FORTH JOB-------");
+            return sortJob.waitForCompletion(true) ? 0 : 1;
 
         } finally {
+            FileSystem.get(conf).delete(tempDir3, true);
             FileSystem.get(conf).delete(tempDir2, true);
             FileSystem.get(conf).delete(tempDir, true);
         }
