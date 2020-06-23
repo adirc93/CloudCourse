@@ -24,7 +24,7 @@ public class Main extends Configured implements Tool {
         Path tempDir2 = new Path("data/temp2-" + Integer.toString(new Random().nextInt(Integer.MAX_VALUE)));
         Path tempDir3 = new Path("data/temp3-" + Integer.toString(new Random().nextInt(Integer.MAX_VALUE)));
         Configuration conf = getConf();
-        //FileSystem.get(conf).delete(new Path(args[1]), true);
+        //FileSystem.get(conf).delete(new Path("data/output", true));
 
         try {
 // ----------- FIRST JOB -----------
@@ -106,8 +106,8 @@ public class Main extends Configured implements Tool {
             FileOutputFormat.setOutputPath(sortJob, new Path(args[1]));
             
             sortJob.setMapOutputValueClass(Text.class);
-            sortJob.setOutputKeyClass(Text.class);
-            sortJob.setOutputValueClass(LongWritable.class);
+            sortJob.setOutputKeyClass(LongWritable.class);
+            sortJob.setOutputValueClass(Text.class);
 
             sortJob.setMapperClass(map4.class);
             sortJob.setReducerClass(reduce4.class);
@@ -116,7 +116,7 @@ public class Main extends Configured implements Tool {
             return sortJob.waitForCompletion(true) ? 0 : 1;
 
         } finally {
-            FileSystem.get(conf).delete(tempDir3, true);
+            //FileSystem.get(conf).delete(tempDir3, true);
             FileSystem.get(conf).delete(tempDir2, true);
             FileSystem.get(conf).delete(tempDir, true);
         }

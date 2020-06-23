@@ -13,7 +13,7 @@ public class map4 extends Mapper<LongWritable, Text, LongWritable, Text> {
     public void map(LongWritable key, Text value, Context context)
             throws IOException, InterruptedException {
 
-        String line = value.toString();
+        String      line = value.toString();
         String[]    lineSplited = line.split("\t");
         String      event = lineSplited[0];
         long        amount = Long.parseLong(lineSplited[1]);
